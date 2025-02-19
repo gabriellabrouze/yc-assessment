@@ -30,14 +30,20 @@ defmodule YCWeb.UserRegistrationLive do
         <.error :if={@check_errors}>
           Oops, something went wrong! Please check the errors below.
         </.error>
-
+        <.input field={@form[:given_name]} type="text" label="First Name" required />
+        <.input field={@form[:family_name]} type="text" label="Last Name" required />
         <.input field={@form[:email]} type="email" label="Email" required />
         <.input field={@form[:password]} type="password" label="Password" required />
-
+        <%!-- select persona --%>
+        <%!-- upload image --%>
         <:actions>
           <.button phx-disable-with="Creating account..." class="w-full">Create an account</.button>
         </:actions>
       </.simple_form>
+      <.header class="text-center block my-2">
+        OR
+      </.header>
+      <.auth_button social="facebook" method="register" />
     </div>
     """
   end

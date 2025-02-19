@@ -31,6 +31,10 @@ defmodule YCWeb.UserLoginLive do
           </.button>
         </:actions>
       </.simple_form>
+      <.header class="text-center block my-2">
+        OR
+      </.header>
+      <.auth_button social="facebook" method="login" />
     </div>
     """
   end
