@@ -3,6 +3,7 @@ defmodule YCWeb.UserRegistrationLive do
 
   alias YC.Accounts
   alias YC.Accounts.User
+  alias YCWeb.UploadWidgetComponent
 
   def render(assigns) do
     ~H"""
@@ -34,8 +35,8 @@ defmodule YCWeb.UserRegistrationLive do
         <.input field={@form[:family_name]} type="text" label="Last Name" required />
         <.input field={@form[:email]} type="email" label="Email" required />
         <.input field={@form[:password]} type="password" label="Password" required />
-        <%!-- select persona --%>
-        <%!-- upload image --%>
+        <.input field={@form[:picture]} type="hidden" value={@image_url} />
+        <.live_component module={UploadWidgetComponent} id="upload-widget" image_url={@image_url} />
         <:actions>
           <.button phx-disable-with="Creating account..." class="w-full">Create an account</.button>
         </:actions>
@@ -54,6 +55,7 @@ defmodule YCWeb.UserRegistrationLive do
     socket =
       socket
       |> assign(trigger_submit: false, check_errors: false)
+      |> assign(:image_url, nil)
       |> assign_form(changeset)
 
     {:ok, socket, temporary_assigns: [form: nil]}
@@ -79,6 +81,10 @@ defmodule YCWeb.UserRegistrationLive do
   def handle_event("validate", %{"user" => user_params}, socket) do
     changeset = Accounts.change_user_registration(%User{}, user_params)
     {:noreply, assign_form(socket, Map.put(changeset, :action, :validate))}
+  end
+
+  def handle_event("image_uploaded", %{"url" => url}, socket) do
+    {:noreply, assign(socket, :image_url, url)}
   end
 
   defp assign_form(socket, %Ecto.Changeset{} = changeset) do
