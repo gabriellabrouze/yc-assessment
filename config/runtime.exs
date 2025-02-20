@@ -114,10 +114,18 @@ if config_env() == :prod do
   #     config :swoosh, :api_client, Swoosh.ApiClient.Hackney
   #
   # See https://hexdocs.pm/swoosh/Swoosh.html#module-installation for details.
-
-  config :yc_assessment, :cloudinary,
-    cloud_name: System.get_env("CLOUDINARY_CLOUD_NAME"),
-    api_key: System.get_env("CLOUDINARY_API_KEY"),
-    api_secret: System.get_env("CLOUDINARY_API_SECRET"),
-    upload_preset: System.get_env("CLOUDINARY_UPLOAD_PRESET")
 end
+
+config :yc_assessment, :cloudinary,
+  cloud_name: System.get_env("CLOUDINARY_CLOUD_NAME"),
+  api_key: System.get_env("CLOUDINARY_API_KEY"),
+  api_secret: System.get_env("CLOUDINARY_API_SECRET"),
+  upload_preset: System.get_env("CLOUDINARY_UPLOAD_PRESET"),
+  google_api_key: System.get_env("GOOGLE_IMAGE_SEARCH_API_KEY")
+
+config :assent,
+  facebook: [
+    client_id: System.get_env("ASSENT_CLIENT_ID"),
+    client_secret: System.get_env("ASSENT_CLIENT_SECRET"),
+    redirect_uri: System.get_env("ASSENT_REDIRECT_URI")
+  ]

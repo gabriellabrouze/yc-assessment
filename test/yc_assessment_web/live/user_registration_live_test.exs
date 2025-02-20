@@ -84,4 +84,10 @@ defmodule YCWeb.UserRegistrationLiveTest do
       assert login_html =~ "Log in"
     end
   end
+
+  test "handles image upload event", %{conn: conn} do
+    {:ok, view, _html} = live(conn, ~p"/users/register")
+    render_hook(view, :image_uploaded, %{url: "https://example.com/image.jpg"})
+    assert render(view) =~ "https://example.com/image.jpg"
+  end
 end

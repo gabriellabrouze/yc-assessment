@@ -12,8 +12,9 @@ defmodule YCWeb.UploadWidgetComponent do
         <.button
           id="upload-widget"
           phx-hook="UploadWidget"
-          data-cloud-name="dmltj6voz"
-          data-cloud-preset="preset1"
+          data-cloud-name={@cloudinary_config[:cloud_name]}
+          data-cloud-preset={@cloudinary_config[:upload_preset]}
+          data-google-api-key={@cloudinary_config[:google_api_key]}
           class="bg-blue-900 my-4"
         >
           <div><.icon name="hero-cloud-arrow-up-solid" class="h-6 w-6" /></div>
@@ -22,6 +23,12 @@ defmodule YCWeb.UploadWidgetComponent do
       </div>
     </div>
     """
+  end
+
+  def mount(socket) do
+    cloudinary_config = Application.get_env(:yc_assessment, :cloudinary)
+
+    {:ok, assign(socket, :cloudinary_config, cloudinary_config)}
   end
 
   def update(assigns, socket) do
