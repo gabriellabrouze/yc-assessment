@@ -47,6 +47,15 @@ defmodule YC.Accounts.User do
     |> validate_password(opts)
   end
 
+  @doc """
+  A User changeset for updating profile fields for user
+  (i.e., given_name, family_name, picture, persona_id)
+  """
+  def update_profile_changeset(user, attrs \\ %{}) do
+    user
+    |> cast(attrs, [:given_name, :family_name, :picture, :persona_id])
+  end
+
   defp validate_email(changeset, opts) do
     changeset
     |> validate_required([:email])

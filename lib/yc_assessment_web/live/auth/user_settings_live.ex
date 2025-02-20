@@ -1,7 +1,10 @@
 defmodule YCWeb.UserSettingsLive do
+  alias YC.Personas
   use YCWeb, :live_view
 
   alias YC.Accounts
+  alias YC.Accounts.User
+  alias YCWeb.UploadWidgetComponent
 
   def render(assigns) do
     ~H"""
@@ -11,6 +14,36 @@ defmodule YCWeb.UserSettingsLive do
     </.header>
 
     <div class="space-y-12 divide-y">
+      <div>
+        <.simple_form
+          for={@profile_form}
+          id="profile_form"
+          phx-submit="update_profile"
+          phx-change="validate_profile"
+        >
+          <.live_component
+            module={UploadWidgetComponent}
+            id="upload-widget"
+            image_url={@image_url}
+            persona={@current_persona}
+          />
+          <.input field={@profile_form[:picture]} type="hidden" value={@image_url} />
+          <.input field={@profile_form[:given_name]} type="text" label="First Name" required />
+          <.input field={@profile_form[:family_name]} type="text" label="Last Name" required />
+
+          <.input
+            field={@profile_form[:persona_id]}
+            type="select"
+            label="Kitchen Persona"
+            options={@persona_options}
+            prompt="Select a persona"
+          />
+          <:actions>
+            <.button phx-disable-with="Changing...">Update Profile</.button>
+          </:actions>
+        </.simple_form>
+      </div>
+
       <div>
         <.simple_form
           for={@email_form}
@@ -90,6 +123,10 @@ defmodule YCWeb.UserSettingsLive do
     user = socket.assigns.current_user
     email_changeset = Accounts.change_user_email(user)
     password_changeset = Accounts.change_user_password(user)
+    user_changeset = User.update_profile_changeset(user)
+    kitchen_personas = Personas.fetch_personas()
+    persona_options = Personas.fetch_options()
+    current_persona = Enum.find(kitchen_personas, &(&1.id == user.persona_id))
 
     socket =
       socket
@@ -99,8 +136,46 @@ defmodule YCWeb.UserSettingsLive do
       |> assign(:email_form, to_form(email_changeset))
       |> assign(:password_form, to_form(password_changeset))
       |> assign(:trigger_submit, false)
+      |> assign(:image_url, user.picture)
+      |> assign(:persona_options, persona_options)
+      |> assign(:kitchen_personas, kitchen_personas)
+      |> assign(:current_persona, current_persona)
+      |> assign(:profile_form, to_form(user_changeset))
 
     {:ok, socket}
+  end
+
+  def handle_event("validate_profile", %{"user" => profile_params}, socket) do
+    IO.inspect("VALIDATE PRO")
+
+    current_persona =
+      Enum.find(
+        socket.assigns.kitchen_personas,
+        &("#{&1.id}" == profile_params["persona_id"])
+      )
+      |> IO.inspect()
+
+    profile_form =
+      socket.assigns.current_user
+      |> User.update_profile_changeset(profile_params)
+      |> Map.put(:action, :validate)
+      |> to_form()
+
+    {:noreply,
+     assign(socket, profile_form: profile_form)
+     |> assign(:current_persona, current_persona)}
+  end
+
+  def handle_event("update_profile", %{"user" => profile_params}, socket) do
+    user = socket.assigns.current_user
+
+    case Accounts.update_user_profile(user, profile_params) do
+      {:ok, _user} ->
+        {:noreply, socket |> put_flash(:info, "Updated Profile")}
+
+      {:error, changeset} ->
+        {:noreply, assign(socket, :profile_form, to_form(Map.put(changeset, :action, :insert)))}
+    end
   end
 
   def handle_event("validate_email", params, socket) do
@@ -163,5 +238,9 @@ defmodule YCWeb.UserSettingsLive do
       {:error, changeset} ->
         {:noreply, assign(socket, password_form: to_form(changeset))}
     end
+  end
+
+  def handle_event("image_uploaded", %{"url" => url}, socket) do
+    {:noreply, assign(socket, :image_url, url)}
   end
 end

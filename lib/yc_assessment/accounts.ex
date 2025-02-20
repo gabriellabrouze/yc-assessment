@@ -250,6 +250,11 @@ defmodule YC.Accounts do
     end
   end
 
+  def update_user_profile(user, attrs) do
+    User.update_profile_changeset(user, attrs)
+    |> Repo.update()
+  end
+
   ## Session
 
   @doc """

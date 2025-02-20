@@ -3,6 +3,7 @@ defmodule YCWeb.UserRegistrationLive do
 
   alias YC.Accounts
   alias YC.Accounts.User
+  alias YC.Personas
   alias YCWeb.UploadWidgetComponent
 
   def render(assigns) do
@@ -31,12 +32,24 @@ defmodule YCWeb.UserRegistrationLive do
         <.error :if={@check_errors}>
           Oops, something went wrong! Please check the errors below.
         </.error>
+        <.live_component
+          module={UploadWidgetComponent}
+          id="upload-widget"
+          image_url={@image_url}
+          persona={@current_persona}
+        />
         <.input field={@form[:given_name]} type="text" label="First Name" required />
         <.input field={@form[:family_name]} type="text" label="Last Name" required />
         <.input field={@form[:email]} type="email" label="Email" required />
         <.input field={@form[:password]} type="password" label="Password" required />
         <.input field={@form[:picture]} type="hidden" value={@image_url} />
-        <.live_component module={UploadWidgetComponent} id="upload-widget" image_url={@image_url} />
+        <.input
+          field={@form[:persona_id]}
+          type="select"
+          label="Kitchen Persona"
+          options={@persona_options}
+          prompt="Select a persona"
+        />
         <:actions>
           <.button phx-disable-with="Creating account..." class="w-full">Create an account</.button>
         </:actions>
@@ -50,12 +63,18 @@ defmodule YCWeb.UserRegistrationLive do
   end
 
   def mount(_params, _session, socket) do
-    changeset = Accounts.change_user_registration(%User{})
+    changeset = Accounts.change_user_registration(%User{persona_id: nil})
+
+    kitchen_personas = Personas.fetch_personas()
+    persona_options = Enum.map(kitchen_personas, &{&1.name, &1.id})
 
     socket =
       socket
       |> assign(trigger_submit: false, check_errors: false)
       |> assign(:image_url, nil)
+      |> assign(:persona_options, persona_options)
+      |> assign(:kitchen_personas, kitchen_personas)
+      |> assign(:current_persona, nil)
       |> assign_form(changeset)
 
     {:ok, socket, temporary_assigns: [form: nil]}
@@ -80,7 +99,16 @@ defmodule YCWeb.UserRegistrationLive do
 
   def handle_event("validate", %{"user" => user_params}, socket) do
     changeset = Accounts.change_user_registration(%User{}, user_params)
-    {:noreply, assign_form(socket, Map.put(changeset, :action, :validate))}
+
+    current_persona =
+      Enum.find(
+        socket.assigns.kitchen_personas,
+        &("#{&1.id}" == user_params["persona_id"])
+      )
+
+    {:noreply,
+     assign(socket, :current_persona, current_persona)
+     |> assign_form(Map.put(changeset, :action, :validate))}
   end
 
   def handle_event("image_uploaded", %{"url" => url}, socket) do

@@ -1,4 +1,4 @@
-defmodule YC.Persona do
+defmodule YC.Personas.Persona do
   use Ecto.Schema
   import Ecto.Changeset
 

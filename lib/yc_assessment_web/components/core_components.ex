@@ -19,6 +19,8 @@ defmodule YCWeb.CoreComponents do
 
   alias Phoenix.LiveView.JS
 
+  import YCWeb.PersonaBadge
+
   @doc """
   Renders a modal.
 
@@ -636,6 +638,43 @@ defmodule YCWeb.CoreComponents do
   def icon(%{name: "hero-" <> _} = assigns) do
     ~H"""
     <span class={[@name, @class]} />
+    """
+  end
+
+  @doc """
+  Renders a picture preview with a border
+
+  ## Examples
+
+      <.picture_preview size="20" colour="FFFFFF" picture="https://pic.com/200"/>
+      <.picture_preview badge="https://pic.com/200" />
+
+  """
+
+  attr :size, :any, default: 24
+  attr :picture, :string
+  attr :persona, :map
+
+  def picture_preview(assigns) do
+    ~H"""
+    <div class="relative" class="w-[200px] h-[200px]">
+      <!-- Profile Picture -->
+      <img
+        src={
+          @picture ||
+            "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIAJQAqAMBIgACEQEDEQH/xAAaAAEAAwEBAQAAAAAAAAAAAAAAAwQFAQIH/8QAKxABAAIBAwMCBQQDAAAAAAAAAAECAwQRURIhMTJBBSNhkbFicXKBIjRS/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAH/xAAWEQEBAQAAAAAAAAAAAAAAAAAAARH/2gAMAwEAAhEDEQA/APqgCoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADrgAAAAAAAAAAAAAAAABMxEbz4GbqtTOWZrXtj45BYza2le2OOuefZUyajLk83nbiOyIMHeq3/U/d6rmyV9OS0f28Bgt4dbaLfO715iF6lotXqrO8csZLpc04cn6Z7SDVCPp4AAAAAAAAAAAHXAEepv0YLW99toZLQ+IT8mkfqZ6wAAAAD2CCjXwW68NLcw9odHO+np9I2TIAAAAAAAAAAAAKvxCN8NZ4sz134heY2x7RtMb7qSwAAAAACjS0P8Ar1/v8rCpoMk2pasxH+PhcQcAAAAAAAAAAJ8ACj8Sj/Kk/SYU2lrMVsmKIpG81tuzZiYmYntPCwAAAAAdrWbTERG8z4KLvw6Pl3nmYXEWlxzjwVraNreZSoAAAAAAAAAAAADK1VOjUXjmd2qra3D14+uPVWPvAM4BQAAWNBWZz9XtWFdp6LH0YYmfNu8lE8eAEAAAAAAAAAAAAB4zz8m/8Z/DuS8Y6Ta3iFDPq7ZYmtYitJ+8gqx4dBQAA9mvgn5NP4x+GQs4NXbFWK2iJrH3go0R5x3jJSLV8S9IAAAAAAAAAhy6nFina1t54jur319p9FNv3kF5Dl1WPH2meqeIZ+TPkyeq87ceEZgnz6m+aJie1eIQAoAAAAAAnwam+GIiO9eJXcWqx5O0T0zxLLEwbQycefJj9N5248rFNfaPXTf9pMF4Q4tTiyztW208T2TAAAK2tyWpjiKzt1eZAGcAQAFAAAAAAAAAAAABo6LJa+OYtO/T4kEFkAH/2Q=="
+        }
+        alt="Picture Preview"
+        class="my-2 rounded-full border-4 w-[200px] h-[200px]"
+        style={"border-color: #{if is_nil(@persona) do "grey" else "##{@persona.colour}" end};"}
+      />
+      <!-- Badge -->
+      <%= if @persona do %>
+        <div class="absolute bottom-0 right-0">
+          <.persona_badge icon={@persona.badge} />
+        </div>
+      <% end %>
+    </div>
     """
   end
 
