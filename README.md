@@ -36,39 +36,39 @@ A Phoenix LiveView application that allows users to register for an account, upl
 
 1. Clone the repository:
 
-   ```bash
+  ```bash
    git clone https://github.com/gabriellabrouze/yc-assessment.git
    cd yc-assessment
-    ```
+  ```
 
 2. Install dependencies and set up the database:
 
   ```bash
-  mix deps.get
-  mix ecto.setup
+    mix deps.get
+    mix ecto.setup
   ```
 
 3. Configure environment variables:
 
-  Create a .env file in the root directory and add the following:
+    Create a .env file in the root directory and add the following:
 
-    ```bash
-      # Cloudinary
-      CLOUDINARY_CLOUD_NAME=your_cloud_name
-      CLOUDINARY_API_KEY=your_api_key
-      CLOUDINARY_API_SECRET=your_api_secret
-      CLOUDINARY_UPLOAD_PRESET=your_upload_preset
-      GOOGLE_IMAGE_SEARCH_API_KEY=your_google_image_search_api_key
-      # Assent (Facebook OAuth2)
-      ASSENT_CLIENT_ID=your_facebook_client_id
-      ASSENT_CLIENT_SECRET=your_facebook_client_secret
-      ASSENT_REDIRECT_URI=your_facebook_redirect_uri
+  ```bash
+    # Cloudinary
+    CLOUDINARY_CLOUD_NAME=your_cloud_name
+    CLOUDINARY_API_KEY=your_api_key
+    CLOUDINARY_API_SECRET=your_api_secret
+    CLOUDINARY_UPLOAD_PRESET=your_upload_preset
+    GOOGLE_IMAGE_SEARCH_API_KEY=your_google_image_search_api_key
+    # Assent (Facebook OAuth2)
+    ASSENT_CLIENT_ID=your_facebook_client_id
+    ASSENT_CLIENT_SECRET=your_facebook_client_secret
+    ASSENT_REDIRECT_URI=your_facebook_redirect_uri
   ```
 
 4. Run the application:
 
   ```bash
-  mix phx.server
+    mix phx.server
   ```
 
 5. Visit http://localhost:4000 in your browser
